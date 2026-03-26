@@ -1,23 +1,26 @@
 ---
-# ─────────────────────────────────────────────
-# Agentic Workflow: Issue Triage Agent
-# ─────────────────────────────────────────────
-# This workflow runs every time a new issue is opened.
-# The AI agent reads the issue, classifies it, labels it,
-# and responds with helpful guidance.
-#
-# Trigger:  New issue opened
-# Security: Read-only agent + safe-outputs for writing
-# ─────────────────────────────────────────────
-on: issues.opened
+# Trigger: runs when a new issue is opened
+on:
+  issues:
+    types: [opened]
 
+# Permissions
 permissions:
-  issues: write
   contents: read
+  issues: read
 
+# AI engine
+engine: copilot
+
+# Network access
+network: defaults
+
+# Safe outputs - what the agent is allowed to do
 safe-outputs:
-  - type: issue-comment
-  - type: issue-label
+  add-comment:
+  add-labels:
+    max: 3
+  update-issue:
 ---
 
 # Issue Triage Agent
@@ -71,16 +74,3 @@ mention it in your comment with a link so the author can check.
 
 Be friendly, welcoming, and helpful. Remember this is a student project — many contributors
 may be filing their first ever GitHub issue. Be encouraging!
-
-## Example Response
-
-> Thank you for opening this issue! 🎉
->
-> I've classified this as a **bug** with **medium priority** based on the description.
->
-> To help us investigate, could you provide:
-> - Steps to reproduce the issue
-> - Expected behavior vs actual behavior
-> - Your Python version and OS
->
-> I noticed this might be related to #12 — you may want to check if that covers your case.
