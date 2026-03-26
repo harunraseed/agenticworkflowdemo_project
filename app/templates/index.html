@@ -160,6 +160,37 @@
       border-radius: 6px; cursor: pointer;
     }
 
+    /* ── Search Bar ──────────────────────── */
+    .search-bar {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      margin-bottom: 1.2rem;
+    }
+    .search-bar input {
+      flex: 1;
+      padding: 0.5rem 0.8rem;
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 6px;
+      color: #c9d1d9;
+      font-size: 0.9rem;
+    }
+    .search-bar input:focus {
+      outline: none;
+      border-color: #58a6ff;
+    }
+    .search-clear {
+      background: #21262d; color: #c9d1d9;
+      border: 1px solid #30363d; padding: 0.45rem 0.8rem;
+      border-radius: 6px; cursor: pointer; font-size: 0.85rem;
+    }
+    .search-clear:hover { background: #30363d; }
+    .empty-state {
+      text-align: center; padding: 3rem 1rem;
+      color: #8b949e; font-size: 0.95rem; grid-column: 1 / -1;
+    }
+
     /* ── Footer ──────────────────────────── */
     footer {
       text-align: center; padding: 2rem;
@@ -206,6 +237,18 @@
       <h2>Student Projects</h2>
       <button class="btn" onclick="openModal()">+ New Project</button>
     </div>
+
+    <!-- ── Search Bar ────────────────────────── -->
+    <div class="search-bar">
+      <input
+        type="text"
+        id="search-input"
+        placeholder="&#128269; Search by project name or description..."
+        oninput="handleSearch()"
+      />
+      <button class="search-clear" onclick="clearSearch()" title="Clear search">&#x2715; Clear</button>
+    </div>
+
     <div class="projects-grid" id="projects-grid"></div>
   </div>
 
@@ -282,10 +325,16 @@
       `;
     }
 
-    async function loadProjects() {
-      const res = await fetch('/api/projects');
+    async function loadProjects(search = '') {
+      const url = search ? `/api/projects?search=${encodeURIComponent(search)}` : '/api/projects';
+      const res = await fetch(url);
       const projects = await res.json();
       const grid = document.getElementById('projects-grid');
+
+      if (projects.length === 0) {
+        grid.innerHTML = '<div class="empty-state">&#128202; No projects available matching your search.</div>';
+        return;
+      }
 
       grid.innerHTML = projects.map(p => {
         const isOverdue = p.due_date && p.due_date < today && p.status !== 'completed';
@@ -306,6 +355,20 @@
           </div>
         `;
       }).join('');
+    }
+
+    let searchTimeout = null;
+    function handleSearch() {
+      clearTimeout(searchTimeout);
+      searchTimeout = setTimeout(() => {
+        const q = document.getElementById('search-input').value.trim();
+        loadProjects(q);
+      }, 300);
+    }
+
+    function clearSearch() {
+      document.getElementById('search-input').value = '';
+      loadProjects();
     }
 
     function openModal()  { document.getElementById('modal-overlay').classList.add('active'); }
