@@ -71,10 +71,25 @@ def index():
 # ──────────────────────────────────────────────
 # REST API Endpoints
 # ──────────────────────────────────────────────
+def filter_projects(query):
+    """Return projects whose title or description contain the query (case-insensitive)."""
+    q = query.lower()
+    return [
+        p for p in projects
+        if q in p["title"].lower() or q in p.get("description", "").lower()
+    ]
+
+
 @app.route("/api/projects", methods=["GET"])
 def get_projects():
-    """Return all projects."""
-    return jsonify(projects)
+    """Return all projects, optionally filtered by a search query.
+
+    Query parameters:
+        search (str): Case-insensitive substring to match against title or description.
+    """
+    search = request.args.get("search", "").strip()
+    result = filter_projects(search) if search else projects
+    return jsonify(result)
 
 
 @app.route("/api/projects/<int:project_id>", methods=["GET"])

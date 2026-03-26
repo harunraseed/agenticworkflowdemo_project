@@ -98,6 +98,70 @@ def test_homepage():
     print("  ✅ GET / — homepage loaded successfully")
 
 
+def test_search_by_name():
+    """Test searching projects by name."""
+    client = app.test_client()
+    response = client.get("/api/projects?search=AI")
+    data = json.loads(response.data)
+
+    assert response.status_code == 200
+    assert len(data) >= 1
+    assert all("ai" in p["title"].lower() or "ai" in p.get("description", "").lower() for p in data)
+    print("  ✅ GET /api/projects?search=AI — returned", len(data), "project(s)")
+
+
+def test_search_by_description():
+    """Test searching projects by description."""
+    client = app.test_client()
+    response = client.get("/api/projects?search=visualization")
+    data = json.loads(response.data)
+
+    assert response.status_code == 200
+    assert len(data) >= 1
+    assert any("visualization" in p.get("description", "").lower() for p in data)
+    print("  ✅ GET /api/projects?search=visualization — returned", len(data), "project(s)")
+
+
+def test_search_case_insensitive():
+    """Test that search is case-insensitive."""
+    client = app.test_client()
+    response_lower = client.get("/api/projects?search=chatbot")
+    response_upper = client.get("/api/projects?search=CHATBOT")
+
+    data_lower = json.loads(response_lower.data)
+    data_upper = json.loads(response_upper.data)
+
+    assert response_lower.status_code == 200
+    assert response_upper.status_code == 200
+    assert len(data_lower) == len(data_upper)
+    print("  ✅ Search is case-insensitive — 'chatbot' and 'CHATBOT' return same count")
+
+
+def test_search_no_results():
+    """Test search that returns no results."""
+    client = app.test_client()
+    response = client.get("/api/projects?search=xyznonexistentproject")
+    data = json.loads(response.data)
+
+    assert response.status_code == 200
+    assert data == []
+    print("  ✅ GET /api/projects?search=xyznonexistentproject — correctly returned empty list")
+
+
+def test_search_empty_query():
+    """Test that an empty search returns all projects."""
+    client = app.test_client()
+    all_response = client.get("/api/projects")
+    search_response = client.get("/api/projects?search=")
+
+    all_data = json.loads(all_response.data)
+    search_data = json.loads(search_response.data)
+
+    assert search_response.status_code == 200
+    assert len(search_data) == len(all_data)
+    print("  ✅ GET /api/projects?search= — empty query returns all", len(search_data), "projects")
+
+
 if __name__ == "__main__":
     print("\n🧪 Running Student Project Tracker Tests\n")
     test_get_projects()
@@ -107,4 +171,9 @@ if __name__ == "__main__":
     test_create_project_validation()
     test_get_stats()
     test_homepage()
+    test_search_by_name()
+    test_search_by_description()
+    test_search_case_insensitive()
+    test_search_no_results()
+    test_search_empty_query()
     print("\n🎉 All tests passed!\n")
