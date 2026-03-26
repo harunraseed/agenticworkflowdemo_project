@@ -282,8 +282,21 @@
     document.getElementById('contact-form').addEventListener('submit', function (e) {
       e.preventDefault();
       // No backend processing — just show success message
-      document.getElementById('contact-form').style.display = 'none';
-      document.getElementById('success-msg').style.display = 'block';
+      var form = document.getElementById('contact-form');
+      var successMsg = document.getElementById('success-msg');
+
+      if (form) {
+        form.style.display = 'none';
+      }
+
+      if (successMsg) {
+        successMsg.style.display = 'block';
+        // Make the success message accessible and move focus to it
+        successMsg.setAttribute('role', 'status');
+        successMsg.setAttribute('aria-live', 'polite');
+        successMsg.setAttribute('tabindex', '-1');
+        successMsg.focus();
+      }
     });
   </script>
 </body>
