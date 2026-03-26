@@ -73,6 +73,12 @@ def index():
     return render_template("index.html")
 
 
+@app.route("/contact")
+def contact():
+    """Serve the Contact Us page."""
+    return render_template("contact.html")
+
+
 # ──────────────────────────────────────────────
 # REST API Endpoints
 # ──────────────────────────────────────────────

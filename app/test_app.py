@@ -166,6 +166,39 @@ def test_search_empty_query():
     print("  ✅ GET /api/projects?search= — empty query returns all", len(search_data), "projects")
 
 
+def test_contact_page_loads():
+    """Test that the Contact Us page loads successfully."""
+    client = app.test_client()
+    response = client.get("/contact")
+
+    assert response.status_code == 200
+    assert b"Contact Us" in response.data
+    print("  ✅ GET /contact — Contact Us page loaded successfully")
+
+
+def test_contact_page_has_form_fields():
+    """Test that the Contact Us page contains all required form fields."""
+    client = app.test_client()
+    response = client.get("/contact")
+
+    assert response.status_code == 200
+    assert b"c-name" in response.data      # Name field
+    assert b"c-email" in response.data     # Email field
+    assert b"c-phone" in response.data     # Phone number field
+    assert b"c-message" in response.data   # Message/textarea field
+    print("  ✅ GET /contact — all required form fields present (name, email, phone, message)")
+
+
+def test_contact_page_has_submit_button():
+    """Test that the Contact Us page contains a submit button."""
+    client = app.test_client()
+    response = client.get("/contact")
+
+    assert response.status_code == 200
+    assert b"btn-submit" in response.data
+    print("  ✅ GET /contact — submit button present")
+
+
 if __name__ == "__main__":
     print("\n🧪 Running Student Project Tracker Tests\n")
     test_get_projects()
@@ -180,4 +213,7 @@ if __name__ == "__main__":
     test_search_case_insensitive()
     test_search_no_results()
     test_search_empty_query()
+    test_contact_page_loads()
+    test_contact_page_has_form_fields()
+    test_contact_page_has_submit_button()
     print("\n🎉 All tests passed!\n")
