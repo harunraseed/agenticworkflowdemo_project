@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Student Project Tracker</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #0d1117;
+      color: #c9d1d9;
+      min-height: 100vh;
+    }
+
+    /* ── Header ─────────────────────────── */
+    header {
+      background: #161b22;
+      border-bottom: 1px solid #30363d;
+      padding: 1rem 2rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    header h1 { font-size: 1.4rem; color: #58a6ff; }
+    .badge {
+      background: #238636; color: #fff;
+      padding: 0.2rem 0.6rem; border-radius: 12px; font-size: 0.75rem;
+    }
+
+    .container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+
+    /* ── Agentic Banner ─────────────────── */
+    .aw-banner {
+      background: linear-gradient(135deg, #161b22 0%, #0e2a47 100%);
+      border: 1px solid #1f6feb;
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+    }
+    .aw-banner .icon { font-size: 2rem; }
+    .aw-banner h3 { color: #58a6ff; margin-bottom: 0.3rem; }
+    .aw-banner p { font-size: 0.9rem; color: #8b949e; line-height: 1.5; }
+    .aw-workflows {
+      display: flex; gap: 0.5rem; margin-top: 0.6rem; flex-wrap: wrap;
+    }
+    .aw-chip {
+      background: #1c2128; border: 1px solid #30363d;
+      padding: 0.25rem 0.6rem; border-radius: 16px; font-size: 0.78rem; color: #58a6ff;
+    }
+
+    /* ── Stats Cards ────────────────────── */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    .stat-card {
+      background: #161b22; border: 1px solid #30363d;
+      border-radius: 8px; padding: 1.2rem;
+    }
+    .stat-card .label { font-size: 0.85rem; color: #8b949e; margin-bottom: 0.3rem; }
+    .stat-card .value { font-size: 2rem; font-weight: 700; }
+    .green  { color: #3fb950; }
+    .blue   { color: #58a6ff; }
+    .yellow { color: #d29922; }
+    .red    { color: #f85149; }
+    .purple { color: #bc8cff; }
+
+    /* ── Section Header ─────────────────── */
+    .section-header {
+      display: flex; justify-content: space-between;
+      align-items: center; margin-bottom: 1rem;
+    }
+    .section-header h2 { font-size: 1.2rem; }
+    .btn {
+      background: #238636; color: #fff; border: none;
+      padding: 0.5rem 1rem; border-radius: 6px;
+      cursor: pointer; font-size: 0.9rem;
+    }
+    .btn:hover { background: #2ea043; }
+
+    /* ── Project Cards ──────────────────── */
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 1rem;
+    }
+    .project-card {
+      background: #161b22; border: 1px solid #30363d;
+      border-radius: 8px; padding: 1.2rem;
+      transition: border-color 0.2s;
+    }
+    .project-card:hover { border-color: #58a6ff; }
+    .project-card h3 { font-size: 1.05rem; margin-bottom: 0.4rem; color: #e6edf3; }
+    .project-card .desc {
+      font-size: 0.85rem; color: #8b949e;
+      margin-bottom: 0.8rem; line-height: 1.4;
+    }
+    .project-meta {
+      display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;
+    }
+    .status-badge {
+      padding: 0.2rem 0.6rem; border-radius: 12px;
+      font-size: 0.78rem; font-weight: 500;
+    }
+    .status-planning    { background: #1f2937; color: #9ca3af; }
+    .status-in-progress { background: #1e3a1e; color: #3fb950; }
+    .status-completed   { background: #0e2a47; color: #58a6ff; }
+    .priority-badge { font-size: 0.78rem; font-weight: 600; }
+    .team-label {
+      font-size: 0.78rem; color: #8b949e;
+      margin-left: auto;
+    }
+    .due-date {
+      display: block; margin-top: 0.6rem;
+      font-size: 0.8rem; color: #8b949e;
+    }
+    .due-date.overdue { color: #f85149; font-weight: 600; }
+
+    /* ── Modal ───────────────────────────── */
+    .modal-overlay {
+      display: none; position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.7); z-index: 100;
+      justify-content: center; align-items: center;
+    }
+    .modal-overlay.active { display: flex; }
+    .modal {
+      background: #161b22; border: 1px solid #30363d;
+      border-radius: 12px; padding: 2rem;
+      width: 90%; max-width: 500px;
+    }
+    .modal h3 { margin-bottom: 1rem; color: #58a6ff; }
+    .form-group { margin-bottom: 1rem; }
+    .form-group label {
+      display: block; font-size: 0.85rem;
+      color: #8b949e; margin-bottom: 0.3rem;
+    }
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%; padding: 0.5rem;
+      background: #0d1117; border: 1px solid #30363d;
+      border-radius: 6px; color: #c9d1d9; font-size: 0.9rem;
+    }
+    .form-group textarea { resize: vertical; min-height: 80px; }
+    .modal-actions {
+      display: flex; gap: 0.5rem;
+      justify-content: flex-end; margin-top: 1rem;
+    }
+    .btn-secondary {
+      background: #21262d; color: #c9d1d9;
+      border: 1px solid #30363d; padding: 0.5rem 1rem;
+      border-radius: 6px; cursor: pointer;
+    }
+
+    /* ── Footer ──────────────────────────── */
+    footer {
+      text-align: center; padding: 2rem;
+      font-size: 0.8rem; color: #484f58;
+      border-top: 1px solid #21262d; margin-top: 2rem;
+    }
+    footer a { color: #58a6ff; text-decoration: none; }
+  </style>
+</head>
+<body>
+
+  <!-- ── Header ──────────────────────────────── -->
+  <header>
+    <h1>&#128203; Student Project Tracker</h1>
+    <span class="badge">Powered by GitHub Agentic Workflows</span>
+  </header>
+
+  <div class="container">
+
+    <!-- ── Agentic Workflows Banner ──────────── -->
+    <div class="aw-banner">
+      <div class="icon">&#129302;</div>
+      <div>
+        <h3>GitHub Agentic Workflows Active</h3>
+        <p>
+          AI agents are monitoring this repository 24/7 &mdash; automatically triaging issues,
+          reviewing pull requests, and generating daily health reports. No manual intervention needed.
+        </p>
+        <div class="aw-workflows">
+          <span class="aw-chip">&#9888;&#65039; Issue Triage</span>
+          <span class="aw-chip">&#128269; PR Reviewer</span>
+          <span class="aw-chip">&#128200; Daily Status</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Stats Cards ───────────────────────── -->
+    <div class="stats-grid" id="stats-grid">
+      <div class="stat-card"><div class="label">Loading...</div><div class="value blue">-</div></div>
+    </div>
+
+    <!-- ── Projects ──────────────────────────── -->
+    <div class="section-header">
+      <h2>Student Projects</h2>
+      <button class="btn" onclick="openModal()">+ New Project</button>
+    </div>
+    <div class="projects-grid" id="projects-grid"></div>
+  </div>
+
+  <!-- ── Add Project Modal ───────────────────── -->
+  <div class="modal-overlay" id="modal-overlay">
+    <div class="modal">
+      <h3>Add New Project</h3>
+      <form id="project-form">
+        <div class="form-group">
+          <label>Project Title *</label>
+          <input type="text" id="f-title" required placeholder="e.g. AI Study Buddy" />
+        </div>
+        <div class="form-group">
+          <label>Team Name *</label>
+          <input type="text" id="f-team" required placeholder="e.g. Team Delta" />
+        </div>
+        <div class="form-group">
+          <label>Description</label>
+          <textarea id="f-desc" placeholder="Brief project description..."></textarea>
+        </div>
+        <div class="form-group">
+          <label>Priority</label>
+          <select id="f-priority">
+            <option value="high">High</option>
+            <option value="medium" selected>Medium</option>
+            <option value="low">Low</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Due Date</label>
+          <input type="date" id="f-due" />
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn-secondary" onclick="closeModal()">Cancel</button>
+          <button type="submit" class="btn">Add Project</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ── Footer ──────────────────────────────── -->
+  <footer>
+    Built for <a href="#">GitHub Copilot Dev Days</a> &bull; Demonstrating Agentic Workflows
+  </footer>
+
+  <!-- ── JavaScript ──────────────────────────── -->
+  <script>
+    const today = new Date().toISOString().split('T')[0];
+
+    async function loadStats() {
+      const res = await fetch('/api/stats');
+      const s = await res.json();
+      document.getElementById('stats-grid').innerHTML = `
+        <div class="stat-card">
+          <div class="label">Total Projects</div>
+          <div class="value blue">${s.total}</div>
+        </div>
+        <div class="stat-card">
+          <div class="label">Planning</div>
+          <div class="value purple">${s.by_status.planning}</div>
+        </div>
+        <div class="stat-card">
+          <div class="label">In Progress</div>
+          <div class="value green">${s.by_status['in-progress']}</div>
+        </div>
+        <div class="stat-card">
+          <div class="label">Completed</div>
+          <div class="value blue">${s.by_status.completed}</div>
+        </div>
+        <div class="stat-card">
+          <div class="label">Overdue</div>
+          <div class="value red">${s.overdue}</div>
+        </div>
+      `;
+    }
+
+    async function loadProjects() {
+      const res = await fetch('/api/projects');
+      const projects = await res.json();
+      const grid = document.getElementById('projects-grid');
+
+      grid.innerHTML = projects.map(p => {
+        const isOverdue = p.due_date && p.due_date < today && p.status !== 'completed';
+        return `
+          <div class="project-card">
+            <h3>${p.title}</h3>
+            <div class="desc">${p.description || 'No description'}</div>
+            <div class="project-meta">
+              <span class="status-badge status-${p.status}">${p.status}</span>
+              <span class="priority-badge priority-${p.priority}">${p.priority.toUpperCase()}</span>
+              <span class="team-label">${p.team}</span>
+            </div>
+            ${p.due_date
+              ? `<span class="due-date ${isOverdue ? 'overdue' : ''}">
+                   ${isOverdue ? '⚠ Overdue — ' : 'Due: '}${p.due_date}
+                 </span>`
+              : ''}
+          </div>
+        `;
+      }).join('');
+    }
+
+    function openModal()  { document.getElementById('modal-overlay').classList.add('active'); }
+    function closeModal() { document.getElementById('modal-overlay').classList.remove('active'); }
+
+    document.getElementById('project-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const body = {
+        title:       document.getElementById('f-title').value,
+        team:        document.getElementById('f-team').value,
+        description: document.getElementById('f-desc').value,
+        priority:    document.getElementById('f-priority').value,
+        due_date:    document.getElementById('f-due').value,
+      };
+      await fetch('/api/projects', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+      closeModal();
+      e.target.reset();
+      loadStats();
+      loadProjects();
+    });
+
+    // Initial load
+    loadStats();
+    loadProjects();
+  </script>
+</body>
+</html>
