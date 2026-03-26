@@ -134,7 +134,11 @@ def test_search_case_insensitive():
     assert response_lower.status_code == 200
     assert response_upper.status_code == 200
     assert len(data_lower) == len(data_upper)
-    print("  ✅ Search is case-insensitive — 'chatbot' and 'CHATBOT' return same count")
+    # Verify that the same projects are returned, not just the same count.
+    ids_lower = sorted(p["id"] for p in data_lower)
+    ids_upper = sorted(p["id"] for p in data_upper)
+    assert ids_lower == ids_upper
+    print("  ✅ Search is case-insensitive — 'chatbot' and 'CHATBOT' return same projects")
 
 
 def test_search_no_results():
