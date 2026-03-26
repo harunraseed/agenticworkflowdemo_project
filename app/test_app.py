@@ -177,15 +177,35 @@ def test_contact_page_loads():
 
 
 def test_contact_page_has_form_fields():
-    """Test that the Contact Us page contains all required form fields."""
+    """Test that the Contact Us page contains all required form fields with correct attributes."""
     client = app.test_client()
     response = client.get("/contact")
 
     assert response.status_code == 200
-    assert b"c-name" in response.data      # Name field
-    assert b"c-email" in response.data     # Email field
-    assert b"c-phone" in response.data     # Phone number field
-    assert b"c-message" in response.data   # Message/textarea field
+    html = response.data.decode("utf-8")
+
+    # Contact form element present
+    assert '<form id="contact-form"' in html
+
+    # Full Name: text input with id, name, and required
+    assert 'id="c-name"' in html
+    assert 'name="name"' in html
+
+    # Email Address: email input with id and name
+    assert 'id="c-email"' in html
+    assert 'name="email"' in html
+    assert 'type="email"' in html
+
+    # Phone Number: tel input with id and name
+    assert 'id="c-phone"' in html
+    assert 'name="phone"' in html
+    assert 'type="tel"' in html
+
+    # Message: textarea element with id and name
+    assert '<textarea' in html
+    assert 'id="c-message"' in html
+    assert 'name="message"' in html
+
     print("  ✅ GET /contact — all required form fields present (name, email, phone, message)")
 
 
@@ -195,7 +215,9 @@ def test_contact_page_has_submit_button():
     response = client.get("/contact")
 
     assert response.status_code == 200
-    assert b"btn-submit" in response.data
+    html = response.data.decode("utf-8")
+    assert 'type="submit"' in html
+    assert 'class="btn-submit"' in html
     print("  ✅ GET /contact — submit button present")
 
 

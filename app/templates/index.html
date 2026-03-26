@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Student Project Tracker</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='shared.css') }}" />
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
@@ -28,17 +29,6 @@
       background: #238636; color: #fff;
       padding: 0.2rem 0.6rem; border-radius: 12px; font-size: 0.75rem;
     }
-    .nav-link {
-      margin-left: auto;
-      color: #58a6ff;
-      text-decoration: none;
-      font-size: 0.9rem;
-      border: 1px solid #30363d;
-      padding: 0.35rem 0.8rem;
-      border-radius: 6px;
-      transition: background 0.2s;
-    }
-    .nav-link:hover { background: #21262d; }
 
     .container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
 
