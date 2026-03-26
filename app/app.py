@@ -7,8 +7,13 @@ focus stays on the agentic workflows (CI/CD automation with AI) rather than the 
 
 from flask import Flask, jsonify, request, render_template
 from datetime import datetime
+import os
 
-app = Flask(__name__)
+# Resolve the templates folder relative to this file so it works both
+# locally (python app.py) and on Vercel (imported from api/index.py).
+_base_dir = os.path.dirname(os.path.abspath(__file__))
+
+app = Flask(__name__, template_folder=os.path.join(_base_dir, "templates"))
 
 # ──────────────────────────────────────────────
 # In-memory data store (no database needed for demo)
