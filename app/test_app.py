@@ -166,6 +166,61 @@ def test_search_empty_query():
     print("  ✅ GET /api/projects?search= — empty query returns all", len(search_data), "projects")
 
 
+def test_contact_page_loads():
+    """Test that the Contact Us page loads successfully."""
+    client = app.test_client()
+    response = client.get("/contact")
+
+    assert response.status_code == 200
+    assert b"Contact Us" in response.data
+    print("  ✅ GET /contact — Contact Us page loaded successfully")
+
+
+def test_contact_page_has_form_fields():
+    """Test that the Contact Us page contains all required form fields with correct attributes."""
+    client = app.test_client()
+    response = client.get("/contact")
+
+    assert response.status_code == 200
+    html = response.data.decode("utf-8")
+
+    # Contact form element present
+    assert '<form id="contact-form"' in html
+
+    # Full Name: text input with id, name, and required
+    assert 'id="c-name"' in html
+    assert 'name="name"' in html
+
+    # Email Address: email input with id and name
+    assert 'id="c-email"' in html
+    assert 'name="email"' in html
+    assert 'type="email"' in html
+
+    # Phone Number: tel input with id and name
+    assert 'id="c-phone"' in html
+    assert 'name="phone"' in html
+    assert 'type="tel"' in html
+
+    # Message: textarea element with id and name
+    assert '<textarea' in html
+    assert 'id="c-message"' in html
+    assert 'name="message"' in html
+
+    print("  ✅ GET /contact — all required form fields present (name, email, phone, message)")
+
+
+def test_contact_page_has_submit_button():
+    """Test that the Contact Us page contains a submit button."""
+    client = app.test_client()
+    response = client.get("/contact")
+
+    assert response.status_code == 200
+    html = response.data.decode("utf-8")
+    assert 'type="submit"' in html
+    assert 'class="btn-submit"' in html
+    print("  ✅ GET /contact — submit button present")
+
+
 if __name__ == "__main__":
     print("\n🧪 Running Student Project Tracker Tests\n")
     test_get_projects()
@@ -180,4 +235,7 @@ if __name__ == "__main__":
     test_search_case_insensitive()
     test_search_no_results()
     test_search_empty_query()
+    test_contact_page_loads()
+    test_contact_page_has_form_fields()
+    test_contact_page_has_submit_button()
     print("\n🎉 All tests passed!\n")

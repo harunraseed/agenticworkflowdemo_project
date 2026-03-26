@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contact Us — Student Project Tracker</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='shared.css') }}" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #0d1117;
+      color: #c9d1d9;
+      min-height: 100vh;
+    }
+
+    /* ── Header ─────────────────────────── */
+    header {
+      background: #161b22;
+      border-bottom: 1px solid #30363d;
+      padding: 1rem 2rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    header h1 { font-size: 1.4rem; color: #58a6ff; }
+    .badge {
+      background: #238636; color: #fff;
+      padding: 0.2rem 0.6rem; border-radius: 12px; font-size: 0.75rem;
+    }
+
+    .container {
+      max-width: 680px;
+      margin: 3rem auto;
+      padding: 0 2rem;
+    }
+
+    /* ── Page Title ─────────────────────── */
+    .page-title {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    .page-title .icon { font-size: 2.5rem; display: block; margin-bottom: 0.6rem; }
+    .page-title h2 { font-size: 1.8rem; color: #e6edf3; margin-bottom: 0.4rem; }
+    .page-title p  { font-size: 0.95rem; color: #8b949e; line-height: 1.5; }
+
+    /* ── Contact Card ───────────────────── */
+    .contact-card {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 12px;
+      padding: 2rem;
+    }
+
+    /* ── Form ───────────────────────────── */
+    .form-group { margin-bottom: 1.2rem; }
+    .form-group label {
+      display: block;
+      font-size: 0.85rem;
+      color: #8b949e;
+      margin-bottom: 0.35rem;
+      font-weight: 500;
+    }
+    .form-group label .required { color: #f85149; margin-left: 2px; }
+    .form-group input,
+    .form-group textarea {
+      width: 100%;
+      padding: 0.6rem 0.8rem;
+      background: #0d1117;
+      border: 1px solid #30363d;
+      border-radius: 6px;
+      color: #c9d1d9;
+      font-size: 0.9rem;
+      transition: border-color 0.2s;
+    }
+    .form-group input:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: #58a6ff;
+    }
+    .form-group textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+
+    /* ── Input Group (icon prefix) ──────── */
+    .input-group {
+      position: relative;
+    }
+    .input-group .input-icon {
+      position: absolute;
+      left: 0.7rem;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 1rem;
+      pointer-events: none;
+    }
+    .input-group input {
+      padding-left: 2.2rem;
+    }
+
+    /* ── Submit Button ──────────────────── */
+    .btn-submit {
+      width: 100%;
+      background: #238636;
+      color: #fff;
+      border: none;
+      padding: 0.7rem 1rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 500;
+      margin-top: 0.5rem;
+      transition: background 0.2s;
+    }
+    .btn-submit:hover { background: #2ea043; }
+
+    /* ── Success Message ────────────────── */
+    .success-msg {
+      display: none;
+      text-align: center;
+      padding: 2rem;
+    }
+    .success-msg .success-icon { font-size: 3rem; display: block; margin-bottom: 0.8rem; }
+    .success-msg h3 { color: #3fb950; font-size: 1.3rem; margin-bottom: 0.5rem; }
+    .success-msg p  { color: #8b949e; font-size: 0.9rem; }
+
+    /* ── Info Strip ─────────────────────── */
+    .info-strip {
+      display: flex;
+      gap: 1rem;
+      margin-top: 1.5rem;
+      flex-wrap: wrap;
+    }
+    .info-item {
+      flex: 1;
+      min-width: 160px;
+      background: #0d1117;
+      border: 1px solid #21262d;
+      border-radius: 8px;
+      padding: 0.9rem 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-size: 0.85rem;
+      color: #8b949e;
+    }
+    .info-item .info-icon { font-size: 1.2rem; }
+
+    /* ── Footer ──────────────────────────── */
+    footer {
+      text-align: center;
+      padding: 2rem;
+      font-size: 0.8rem;
+      color: #484f58;
+      border-top: 1px solid #21262d;
+      margin-top: 3rem;
+    }
+    footer a { color: #58a6ff; text-decoration: none; }
+  </style>
+</head>
+<body>
+
+  <!-- ── Header ──────────────────────────────── -->
+  <header>
+    <h1>&#128203; Student Project Tracker</h1>
+    <span class="badge">Powered by GitHub Agentic Workflows</span>
+    <a href="/" class="nav-link">&#8592; Back to Dashboard</a>
+  </header>
+
+  <div class="container">
+
+    <!-- ── Page Title ────────────────────────── -->
+    <div class="page-title">
+      <span class="icon">&#9993;&#65039;</span>
+      <h2>Contact Us</h2>
+      <p>Have a question or feedback? We'd love to hear from you.<br>Fill in the form below and we'll get back to you shortly.</p>
+    </div>
+
+    <!-- ── Contact Form Card ─────────────────── -->
+    <div class="contact-card">
+
+      <!-- Form -->
+      <form id="contact-form" method="post" action="/contact">
+        <div class="form-group">
+          <label for="c-name">Full Name <span class="required">*</span></label>
+          <div class="input-group">
+            <span class="input-icon" aria-hidden="true">&#128100;</span>
+            <input
+              type="text"
+              id="c-name"
+              name="name"
+              placeholder="e.g. Jane Smith"
+              required
+            />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="c-email">Email Address <span class="required">*</span></label>
+          <div class="input-group">
+            <span class="input-icon" aria-hidden="true">&#128231;</span>
+            <input
+              type="email"
+              id="c-email"
+              name="email"
+              placeholder="e.g. jane@university.edu"
+              required
+            />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="c-phone">Phone Number</label>
+          <div class="input-group">
+            <span class="input-icon" aria-hidden="true">&#128222;</span>
+            <input
+              type="tel"
+              id="c-phone"
+              name="phone"
+              placeholder="e.g. +1 (555) 000-1234"
+            />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="c-message">Message <span class="required">*</span></label>
+          <textarea
+            id="c-message"
+            name="message"
+            placeholder="Tell us how we can help you..."
+            required
+          ></textarea>
+        </div>
+
+        <button type="submit" class="btn-submit">&#9993; Send Message</button>
+      </form>
+
+      <!-- Success State (shown after submit) -->
+      <div class="success-msg" id="success-msg" role="status" aria-live="polite" tabindex="-1">
+        <span class="success-icon" aria-hidden="true">&#9989;</span>
+        <h3>Message Sent!</h3>
+        <p>Thanks for reaching out. We'll get back to you as soon as possible.</p>
+      </div>
+    </div>
+
+    <!-- ── Info Strip ─────────────────────────── -->
+    <div class="info-strip">
+      <div class="info-item">
+        <span class="info-icon" aria-hidden="true">&#128205;</span>
+        <span>123 Campus Drive, Building A</span>
+      </div>
+      <div class="info-item">
+        <span class="info-icon" aria-hidden="true">&#128222;</span>
+        <span>+1 (555) 123-4567</span>
+      </div>
+      <div class="info-item">
+        <span class="info-icon" aria-hidden="true">&#128231;</span>
+        <span>support@projecttracker.edu</span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ── Footer ──────────────────────────────── -->
+  <footer>
+    Built for <span>GitHub Copilot Dev Days</span> &bull; Demonstrating Agentic Workflows
+  </footer>
+
+  <script>
+    document.getElementById('contact-form').addEventListener('submit', function (e) {
+      e.preventDefault();
+      // No backend processing — just show success message
+      var form = document.getElementById('contact-form');
+      var successMsg = document.getElementById('success-msg');
+
+      if (form) {
+        form.style.display = 'none';
+      }
+
+      if (successMsg) {
+        successMsg.style.display = 'block';
+        // Make the success message accessible and move focus to it
+        successMsg.setAttribute('role', 'status');
+        successMsg.setAttribute('aria-live', 'polite');
+        successMsg.setAttribute('tabindex', '-1');
+        successMsg.focus();
+      }
+    });
+  </script>
+</body>
+</html>

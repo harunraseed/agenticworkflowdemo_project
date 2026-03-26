@@ -1,0 +1,12 @@
+/* ── Shared nav-link style used by all pages ──────────── */
+.nav-link {
+  margin-left: auto;
+  color: #58a6ff;
+  text-decoration: none;
+  font-size: 0.9rem;
+  border: 1px solid #30363d;
+  padding: 0.35rem 0.8rem;
+  border-radius: 6px;
+  transition: background 0.2s;
+}
+.nav-link:hover { background: #21262d; }

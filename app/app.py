@@ -13,7 +13,11 @@ import os
 # locally (python app.py) and on Vercel (imported from api/index.py).
 _base_dir = os.path.dirname(os.path.abspath(__file__))
 
-app = Flask(__name__, template_folder=os.path.join(_base_dir, "templates"))
+app = Flask(
+    __name__,
+    template_folder=os.path.join(_base_dir, "templates"),
+    static_folder=os.path.join(_base_dir, "static"),
+)
 
 # ──────────────────────────────────────────────
 # In-memory data store (no database needed for demo)
@@ -71,6 +75,17 @@ next_id = 5
 def index():
     """Serve the main dashboard page."""
     return render_template("index.html")
+
+
+@app.route("/contact", methods=["GET", "POST"])
+def contact():
+    """Serve the Contact Us page.
+
+    Accepts POST to avoid a 405 when JS is disabled and the browser submits
+    the form natively.  No form data is persisted — submission logic runs
+    entirely client-side via JavaScript.
+    """
+    return render_template("contact.html")
 
 
 # ──────────────────────────────────────────────
