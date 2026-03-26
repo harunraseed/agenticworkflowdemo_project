@@ -160,6 +160,23 @@
       border-radius: 6px; cursor: pointer;
     }
 
+    /* ── Search Bar ─────────────────────── */
+    .search-bar {
+      margin-bottom: 1rem;
+    }
+    .search-bar input {
+      width: 100%; padding: 0.6rem 1rem;
+      background: #161b22; border: 1px solid #30363d;
+      border-radius: 6px; color: #c9d1d9; font-size: 0.95rem;
+    }
+    .search-bar input:focus {
+      outline: none; border-color: #58a6ff;
+    }
+    .no-results {
+      color: #8b949e; text-align: center;
+      padding: 2rem; font-size: 0.95rem;
+    }
+
     /* ── Footer ──────────────────────────── */
     footer {
       text-align: center; padding: 2rem;
@@ -205,6 +222,14 @@
     <div class="section-header">
       <h2>Student Projects</h2>
       <button class="btn" onclick="openModal()">+ New Project</button>
+    </div>
+    <div class="search-bar">
+      <input
+        type="text"
+        id="search-input"
+        placeholder="&#128269; Search projects by name or description..."
+        oninput="loadProjects()"
+      />
     </div>
     <div class="projects-grid" id="projects-grid"></div>
   </div>
@@ -283,9 +308,16 @@
     }
 
     async function loadProjects() {
-      const res = await fetch('/api/projects');
+      const search = document.getElementById('search-input').value.trim();
+      const url = search ? `/api/projects?search=${encodeURIComponent(search)}` : '/api/projects';
+      const res = await fetch(url);
       const projects = await res.json();
       const grid = document.getElementById('projects-grid');
+
+      if (projects.length === 0) {
+        grid.innerHTML = '<div class="no-results">No projects found matching your search.</div>';
+        return;
+      }
 
       grid.innerHTML = projects.map(p => {
         const isOverdue = p.due_date && p.due_date < today && p.status !== 'completed';

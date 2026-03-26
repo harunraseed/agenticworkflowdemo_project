@@ -73,8 +73,22 @@ def index():
 # ──────────────────────────────────────────────
 @app.route("/api/projects", methods=["GET"])
 def get_projects():
-    """Return all projects."""
-    return jsonify(projects)
+    """Return all projects, optionally filtered by a search query.
+
+    Query Parameters:
+        search (str): Case-insensitive substring to match against project
+                      title and description.
+    """
+    search = request.args.get("search", "").strip().lower()
+    if search:
+        result = [
+            p for p in projects
+            if search in p["title"].lower()
+            or search in p.get("description", "").lower()
+        ]
+    else:
+        result = projects
+    return jsonify(result)
 
 
 @app.route("/api/projects/<int:project_id>", methods=["GET"])

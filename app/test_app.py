@@ -98,6 +98,66 @@ def test_homepage():
     print("  ✅ GET / — homepage loaded successfully")
 
 
+def test_search_projects_by_title():
+    """Test searching projects by title."""
+    client = app.test_client()
+    response = client.get("/api/projects?search=chatbot")
+    data = json.loads(response.data)
+
+    assert response.status_code == 200
+    assert len(data) == 1
+    assert data[0]["title"] == "AI Chatbot"
+    print("  ✅ GET /api/projects?search=chatbot — found", len(data), "project(s)")
+
+
+def test_search_projects_by_description():
+    """Test searching projects by description text."""
+    client = app.test_client()
+    response = client.get("/api/projects?search=matplotlib")
+    data = json.loads(response.data)
+
+    assert response.status_code == 200
+    assert len(data) == 1
+    assert data[0]["title"] == "Weather Dashboard"
+    print("  ✅ GET /api/projects?search=matplotlib — found", len(data), "project(s)")
+
+
+def test_search_case_insensitive():
+    """Test that search is case-insensitive."""
+    client = app.test_client()
+    response = client.get("/api/projects?search=PORTAL")
+    data = json.loads(response.data)
+
+    assert response.status_code == 200
+    assert len(data) == 1
+    assert data[0]["title"] == "Student Portal"
+    print("  ✅ GET /api/projects?search=PORTAL — case-insensitive match works")
+
+
+def test_search_no_results():
+    """Test search that matches nothing returns empty list."""
+    client = app.test_client()
+    response = client.get("/api/projects?search=xyznonexistent")
+    data = json.loads(response.data)
+
+    assert response.status_code == 200
+    assert data == []
+    print("  ✅ GET /api/projects?search=xyznonexistent — correctly returned empty list")
+
+
+def test_search_empty_returns_all():
+    """Test that an empty search string returns all projects."""
+    client = app.test_client()
+    all_response = client.get("/api/projects")
+    search_response = client.get("/api/projects?search=")
+    all_data = json.loads(all_response.data)
+    search_data = json.loads(search_response.data)
+
+    assert search_response.status_code == 200
+    assert len(search_data) == len(all_data)
+    print("  ✅ GET /api/projects?search= — empty search returns all", len(search_data), "projects")
+
+
 if __name__ == "__main__":
     print("\n🧪 Running Student Project Tracker Tests\n")
     test_get_projects()
@@ -107,4 +167,9 @@ if __name__ == "__main__":
     test_create_project_validation()
     test_get_stats()
     test_homepage()
+    test_search_projects_by_title()
+    test_search_projects_by_description()
+    test_search_case_insensitive()
+    test_search_no_results()
+    test_search_empty_returns_all()
     print("\n🎉 All tests passed!\n")
