@@ -221,6 +221,203 @@ def test_contact_page_has_submit_button():
     print("  ✅ GET /contact — submit button present")
 
 
+# ──────────────────────────────────────────────
+# Team Registration Tests
+# ──────────────────────────────────────────────
+
+def test_register_page_loads():
+    """Test that the team registration page loads."""
+    client = app.test_client()
+    response = client.get("/register")
+
+    assert response.status_code == 200
+    assert b"Team Registration" in response.data
+    print("  ✅ GET /register — page loaded successfully")
+
+
+def test_register_page_has_form_fields():
+    """Test that the registration page contains all required fields."""
+    client = app.test_client()
+    response = client.get("/register")
+
+    assert response.status_code == 200
+    html = response.data.decode("utf-8")
+    assert 'id="r-team-name"' in html
+    assert 'id="r-college"' in html
+    assert 'id="r-email"' in html
+    assert 'id="r-project-area"' in html
+    assert 'id="members-list"' in html
+    print("  ✅ GET /register — all required form fields present")
+
+
+def test_get_teams_empty():
+    """Test that GET /api/teams returns an empty list initially."""
+    client = app.test_client()
+    response = client.get("/api/teams")
+    data = json.loads(response.data)
+
+    assert response.status_code == 200
+    assert isinstance(data, list)
+    print("  ✅ GET /api/teams — returned list of", len(data), "team(s)")
+
+
+def test_register_team():
+    """Test registering a new team."""
+    client = app.test_client()
+    payload = {
+        "team_name": "Test Rockets",
+        "college_name": "Test University",
+        "contact_email": "rockets@test.edu",
+        "project_area": "Machine Learning",
+        "members": ["Alice Smith", "Bob Jones", "Carol White"],
+    }
+    response = client.post(
+        "/api/teams",
+        data=json.dumps(payload),
+        content_type="application/json",
+    )
+    data = json.loads(response.data)
+
+    assert response.status_code == 201
+    assert data["team_name"] == "Test Rockets"
+    assert data["college_name"] == "Test University"
+    assert data["contact_email"] == "rockets@test.edu"
+    assert data["project_area"] == "Machine Learning"
+    assert data["members"] == ["Alice Smith", "Bob Jones", "Carol White"]
+    assert "id" in data
+    assert "registered_at" in data
+    print("  ✅ POST /api/teams — registered team id", data["id"])
+
+
+def test_register_team_appears_in_list():
+    """Test that a registered team shows up in GET /api/teams."""
+    client = app.test_client()
+    payload = {
+        "team_name": "Visible Team",
+        "college_name": "State College",
+        "members": ["Dana Lee"],
+    }
+    client.post(
+        "/api/teams",
+        data=json.dumps(payload),
+        content_type="application/json",
+    )
+    response = client.get("/api/teams")
+    data = json.loads(response.data)
+
+    assert response.status_code == 200
+    names = [t["team_name"] for t in data]
+    assert "Visible Team" in names
+    print("  ✅ GET /api/teams — registered team appears in list")
+
+
+def test_register_team_missing_team_name():
+    """Test that missing team_name returns 400."""
+    client = app.test_client()
+    payload = {
+        "college_name": "Test University",
+        "members": ["Alice Smith"],
+    }
+    response = client.post(
+        "/api/teams",
+        data=json.dumps(payload),
+        content_type="application/json",
+    )
+
+    assert response.status_code == 400
+    data = json.loads(response.data)
+    assert "error" in data
+    print("  ✅ POST /api/teams (no team_name) — correctly returned 400")
+
+
+def test_register_team_missing_college_name():
+    """Test that missing college_name returns 400."""
+    client = app.test_client()
+    payload = {
+        "team_name": "No College Team",
+        "members": ["Alice Smith"],
+    }
+    response = client.post(
+        "/api/teams",
+        data=json.dumps(payload),
+        content_type="application/json",
+    )
+
+    assert response.status_code == 400
+    data = json.loads(response.data)
+    assert "error" in data
+    print("  ✅ POST /api/teams (no college_name) — correctly returned 400")
+
+
+def test_register_team_missing_members():
+    """Test that an empty members list returns 400."""
+    client = app.test_client()
+    payload = {
+        "team_name": "Empty Team",
+        "college_name": "Test University",
+        "members": [],
+    }
+    response = client.post(
+        "/api/teams",
+        data=json.dumps(payload),
+        content_type="application/json",
+    )
+
+    assert response.status_code == 400
+    data = json.loads(response.data)
+    assert "error" in data
+    print("  ✅ POST /api/teams (no members) — correctly returned 400")
+
+
+def test_register_team_too_many_members():
+    """Test that more than 5 members returns 400."""
+    client = app.test_client()
+    payload = {
+        "team_name": "Huge Team",
+        "college_name": "Big University",
+        "members": ["A", "B", "C", "D", "E", "F"],  # 6 members
+    }
+    response = client.post(
+        "/api/teams",
+        data=json.dumps(payload),
+        content_type="application/json",
+    )
+
+    assert response.status_code == 400
+    data = json.loads(response.data)
+    assert "error" in data
+    print("  ✅ POST /api/teams (6 members) — correctly returned 400")
+
+
+def test_register_team_max_five_members():
+    """Test that exactly 5 members is allowed."""
+    client = app.test_client()
+    payload = {
+        "team_name": "Full Team",
+        "college_name": "Five College",
+        "members": ["A", "B", "C", "D", "E"],
+    }
+    response = client.post(
+        "/api/teams",
+        data=json.dumps(payload),
+        content_type="application/json",
+    )
+    data = json.loads(response.data)
+
+    assert response.status_code == 201
+    assert len(data["members"]) == 5
+    print("  ✅ POST /api/teams (5 members) — allowed, id", data["id"])
+
+
+def test_register_team_no_body():
+    """Test that a request with no JSON body returns 400."""
+    client = app.test_client()
+    response = client.post("/api/teams", content_type="application/json")
+
+    assert response.status_code == 400
+    print("  ✅ POST /api/teams (no body) — correctly returned 400")
+
+
 if __name__ == "__main__":
     print("\n🧪 Running Student Project Tracker Tests\n")
     test_get_projects()
@@ -238,4 +435,15 @@ if __name__ == "__main__":
     test_contact_page_loads()
     test_contact_page_has_form_fields()
     test_contact_page_has_submit_button()
+    test_register_page_loads()
+    test_register_page_has_form_fields()
+    test_get_teams_empty()
+    test_register_team()
+    test_register_team_appears_in_list()
+    test_register_team_missing_team_name()
+    test_register_team_missing_college_name()
+    test_register_team_missing_members()
+    test_register_team_too_many_members()
+    test_register_team_max_five_members()
+    test_register_team_no_body()
     print("\n🎉 All tests passed!\n")

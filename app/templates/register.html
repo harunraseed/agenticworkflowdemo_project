@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Team Registration — Student Project Tracker</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='shared.css') }}" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #0d1117;
+      color: #c9d1d9;
+      min-height: 100vh;
+    }
+
+    /* ── Header ─────────────────────────── */
+    header {
+      background: #161b22;
+      border-bottom: 1px solid #30363d;
+      padding: 1rem 2rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    header h1 { font-size: 1.4rem; color: #58a6ff; }
+    .badge {
+      background: #238636; color: #fff;
+      padding: 0.2rem 0.6rem; border-radius: 12px; font-size: 0.75rem;
+    }
+    .nav-links { margin-left: auto; display: flex; gap: 0.6rem; }
+
+    /* ── Layout ─────────────────────────── */
+    .container {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem;
+    }
+
+    /* ── Page title ─────────────────────── */
+    .page-title {
+      margin-bottom: 1.5rem;
+    }
+    .page-title h2 {
+      font-size: 1.5rem;
+      color: #e6edf3;
+      margin-bottom: 0.3rem;
+    }
+    .page-title p {
+      font-size: 0.9rem;
+      color: #8b949e;
+    }
+
+    /* ── Form card ──────────────────────── */
+    .form-card {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 12px;
+      padding: 2rem;
+    }
+
+    .form-group { margin-bottom: 1.2rem; }
+    .form-group label {
+      display: block;
+      font-size: 0.85rem;
+      color: #8b949e;
+      margin-bottom: 0.35rem;
+    }
+    .form-group label .required { color: #f85149; margin-left: 2px; }
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 0.55rem 0.75rem;
+      background: #0d1117;
+      border: 1px solid #30363d;
+      border-radius: 6px;
+      color: #c9d1d9;
+      font-size: 0.9rem;
+      transition: border-color 0.2s;
+    }
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: #58a6ff;
+    }
+    .form-group input::placeholder { color: #484f58; }
+
+    /* ── Members section ────────────────── */
+    .members-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.5rem;
+    }
+    .members-header label {
+      font-size: 0.85rem;
+      color: #8b949e;
+    }
+    .members-header .required { color: #f85149; margin-left: 2px; }
+    .members-header span {
+      font-size: 0.78rem;
+      color: #484f58;
+    }
+    #members-list { display: flex; flex-direction: column; gap: 0.5rem; }
+    .member-row {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .member-row input { flex: 1; }
+    .member-num {
+      font-size: 0.8rem;
+      color: #484f58;
+      min-width: 1.4rem;
+      text-align: right;
+    }
+    .btn-remove-member {
+      background: none;
+      border: 1px solid #30363d;
+      color: #8b949e;
+      border-radius: 6px;
+      width: 2rem;
+      height: 2rem;
+      cursor: pointer;
+      font-size: 1rem;
+      line-height: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .btn-remove-member:hover { background: #21262d; color: #f85149; border-color: #f85149; }
+    .btn-add-member {
+      margin-top: 0.5rem;
+      background: #21262d;
+      border: 1px dashed #30363d;
+      color: #8b949e;
+      border-radius: 6px;
+      padding: 0.45rem 0.8rem;
+      cursor: pointer;
+      font-size: 0.85rem;
+      width: 100%;
+    }
+    .btn-add-member:hover { background: #2d333b; border-color: #58a6ff; color: #58a6ff; }
+
+    /* ── Divider ────────────────────────── */
+    .form-divider {
+      border: none;
+      border-top: 1px solid #21262d;
+      margin: 1.4rem 0;
+    }
+
+    /* ── Actions ────────────────────────── */
+    .form-actions {
+      display: flex;
+      gap: 0.8rem;
+      justify-content: flex-end;
+      margin-top: 1.4rem;
+    }
+    .btn-submit {
+      background: #238636;
+      color: #fff;
+      border: none;
+      padding: 0.6rem 1.4rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.95rem;
+      font-weight: 600;
+    }
+    .btn-submit:hover { background: #2ea043; }
+    .btn-cancel {
+      background: #21262d;
+      color: #c9d1d9;
+      border: 1px solid #30363d;
+      padding: 0.6rem 1.2rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.95rem;
+      text-decoration: none;
+      display: inline-block;
+    }
+    .btn-cancel:hover { background: #30363d; }
+
+    /* ── Success banner ─────────────────── */
+    .success-banner {
+      display: none;
+      background: #1e3a1e;
+      border: 1px solid #3fb950;
+      border-radius: 10px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      text-align: center;
+    }
+    .success-banner .icon { font-size: 2.5rem; margin-bottom: 0.5rem; }
+    .success-banner h3 { color: #3fb950; margin-bottom: 0.4rem; }
+    .success-banner p { font-size: 0.9rem; color: #8b949e; }
+    .success-banner .team-summary {
+      margin-top: 1rem;
+      background: #0d1117;
+      border-radius: 8px;
+      padding: 1rem;
+      text-align: left;
+      font-size: 0.88rem;
+    }
+    .success-banner .team-summary strong { color: #c9d1d9; }
+    .success-banner .btn-register-another {
+      margin-top: 1rem;
+      background: #238636;
+      color: #fff;
+      border: none;
+      padding: 0.5rem 1.2rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+    .success-banner .btn-register-another:hover { background: #2ea043; }
+
+    /* ── Error message ──────────────────── */
+    .error-msg {
+      display: none;
+      background: #2d1b1b;
+      border: 1px solid #f85149;
+      border-radius: 8px;
+      padding: 0.8rem 1rem;
+      margin-bottom: 1rem;
+      font-size: 0.88rem;
+      color: #f85149;
+    }
+
+    /* ── Footer ─────────────────────────── */
+    footer {
+      text-align: center; padding: 2rem;
+      font-size: 0.8rem; color: #484f58;
+      border-top: 1px solid #21262d; margin-top: 3rem;
+    }
+    footer a { color: #58a6ff; text-decoration: none; }
+  </style>
+</head>
+<body>
+
+  <!-- ── Header ──────────────────────────────── -->
+  <header>
+    <h1>&#128203; Student Project Tracker</h1>
+    <span class="badge">Powered by GitHub Agentic Workflows</span>
+    <nav class="nav-links">
+      <a href="/" class="nav-link">&#127968; Dashboard</a>
+      <a href="/contact" class="nav-link">&#9993; Contact Us</a>
+    </nav>
+  </header>
+
+  <div class="container">
+
+    <div class="page-title">
+      <h2>&#128101; Team Registration</h2>
+      <p>Register your student team to get started with project tracking.</p>
+    </div>
+
+    <!-- ── Success Banner (shown after submission) ── -->
+    <div class="success-banner" id="success-banner">
+      <div class="icon">&#127881;</div>
+      <h3>Team Registered Successfully!</h3>
+      <p>Your team has been registered. You can now add projects from the dashboard.</p>
+      <div class="team-summary" id="success-summary"></div>
+      <button class="btn-register-another" onclick="registerAnother()">Register Another Team</button>
+    </div>
+
+    <!-- ── Error message ──────────────────────── -->
+    <div class="error-msg" id="error-msg"></div>
+
+    <!-- ── Registration Form ──────────────────── -->
+    <div class="form-card" id="form-card">
+      <form id="register-form" novalidate>
+
+        <!-- Team details -->
+        <div class="form-group">
+          <label for="r-team-name">Team Name <span class="required">*</span></label>
+          <input
+            type="text"
+            id="r-team-name"
+            name="team_name"
+            placeholder="e.g. Team Alpha"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="r-college">College / University <span class="required">*</span></label>
+          <input
+            type="text"
+            id="r-college"
+            name="college_name"
+            placeholder="e.g. State University of Technology"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="r-email">Contact Email</label>
+          <input
+            type="email"
+            id="r-email"
+            name="contact_email"
+            placeholder="e.g. teamalpha@university.edu"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="r-project-area">Project Area / Domain</label>
+          <input
+            type="text"
+            id="r-project-area"
+            name="project_area"
+            placeholder="e.g. Artificial Intelligence, Web Development"
+          />
+        </div>
+
+        <hr class="form-divider" />
+
+        <!-- Team members -->
+        <div class="members-header">
+          <label>Team Members <span class="required">*</span></label>
+          <span id="member-count-label">1–5 members</span>
+        </div>
+        <div id="members-list">
+          <div class="member-row" data-index="0">
+            <span class="member-num">1.</span>
+            <input
+              type="text"
+              name="member_0"
+              placeholder="Student full name"
+              required
+            />
+          </div>
+        </div>
+        <button type="button" class="btn-add-member" id="btn-add-member" onclick="addMember()">
+          + Add Another Member
+        </button>
+
+        <div class="form-actions">
+          <a href="/" class="btn-cancel">Cancel</a>
+          <button type="submit" class="btn-submit">&#10003; Register Team</button>
+        </div>
+
+      </form>
+    </div>
+
+  </div>
+
+  <!-- ── Footer ──────────────────────────────── -->
+  <footer>
+    Built for <a href="#">GitHub Copilot Dev Days</a> &bull; Demonstrating Agentic Workflows
+  </footer>
+
+  <!-- ── JavaScript ──────────────────────────── -->
+  <script>
+    const MAX_MEMBERS = 5;
+    let memberCount = 1;
+
+    function updateMemberUI() {
+      document.getElementById('member-count-label').textContent =
+        `${memberCount} / ${MAX_MEMBERS} member${memberCount !== 1 ? 's' : ''}`;
+      document.getElementById('btn-add-member').style.display =
+        memberCount >= MAX_MEMBERS ? 'none' : 'block';
+
+      // Show/hide remove buttons — always keep at least 1 member row
+      document.querySelectorAll('.btn-remove-member').forEach(btn => {
+        btn.style.display = memberCount > 1 ? 'flex' : 'none';
+      });
+    }
+
+    function addMember() {
+      if (memberCount >= MAX_MEMBERS) return;
+      const list = document.getElementById('members-list');
+      const idx = memberCount;
+      const row = document.createElement('div');
+      row.className = 'member-row';
+      row.dataset.index = idx;
+      row.innerHTML = `
+        <span class="member-num">${idx + 1}.</span>
+        <input type="text" name="member_${idx}" placeholder="Student full name" />
+        <button type="button" class="btn-remove-member" onclick="removeMember(this)" title="Remove">&#x2715;</button>
+      `;
+      list.appendChild(row);
+      memberCount++;
+      updateMemberUI();
+      row.querySelector('input').focus();
+    }
+
+    function removeMember(btn) {
+      const row = btn.closest('.member-row');
+      row.remove();
+      memberCount--;
+      // Re-number remaining rows
+      document.querySelectorAll('#members-list .member-row').forEach((r, i) => {
+        r.querySelector('.member-num').textContent = `${i + 1}.`;
+        r.querySelector('input').name = `member_${i}`;
+      });
+      updateMemberUI();
+    }
+
+    function showError(msg) {
+      const el = document.getElementById('error-msg');
+      el.textContent = msg;
+      el.style.display = 'block';
+      el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    function hideError() {
+      document.getElementById('error-msg').style.display = 'none';
+    }
+
+    function registerAnother() {
+      document.getElementById('success-banner').style.display = 'none';
+      document.getElementById('form-card').style.display = 'block';
+      document.getElementById('register-form').reset();
+      // Reset members to one row
+      const list = document.getElementById('members-list');
+      list.innerHTML = `
+        <div class="member-row" data-index="0">
+          <span class="member-num">1.</span>
+          <input type="text" name="member_0" placeholder="Student full name" required />
+        </div>`;
+      memberCount = 1;
+      updateMemberUI();
+    }
+
+    document.getElementById('register-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      hideError();
+
+      const teamName = document.getElementById('r-team-name').value.trim();
+      const collegeName = document.getElementById('r-college').value.trim();
+      const contactEmail = document.getElementById('r-email').value.trim();
+      const projectArea = document.getElementById('r-project-area').value.trim();
+
+      // Collect member names (skip empty)
+      const memberInputs = document.querySelectorAll('#members-list input');
+      const members = Array.from(memberInputs)
+        .map(inp => inp.value.trim())
+        .filter(v => v.length > 0);
+
+      if (!teamName) { showError('Team name is required.'); return; }
+      if (!collegeName) { showError('College / University name is required.'); return; }
+      if (members.length === 0) { showError('Please enter at least one team member.'); return; }
+
+      const payload = {
+        team_name: teamName,
+        college_name: collegeName,
+        contact_email: contactEmail,
+        project_area: projectArea,
+        members,
+      };
+
+      try {
+        const res = await fetch('/api/teams', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        const data = await res.json();
+
+        if (!res.ok) {
+          showError(data.error || 'Registration failed. Please try again.');
+          return;
+        }
+
+        // Show success
+        document.getElementById('form-card').style.display = 'none';
+        const summary = document.getElementById('success-summary');
+        summary.innerHTML = `
+          <p><strong>Team:</strong> ${escHtml(data.team_name)}</p>
+          <p><strong>College:</strong> ${escHtml(data.college_name)}</p>
+          ${data.project_area ? `<p><strong>Project Area:</strong> ${escHtml(data.project_area)}</p>` : ''}
+          ${data.contact_email ? `<p><strong>Contact:</strong> ${escHtml(data.contact_email)}</p>` : ''}
+          <p><strong>Members (${data.members.length}):</strong> ${data.members.map(escHtml).join(', ')}</p>
+        `;
+        document.getElementById('success-banner').style.display = 'block';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+
+      } catch (err) {
+        showError('Network error. Please check your connection and try again.');
+      }
+    });
+
+    function escHtml(str) {
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    // Initialise UI state
+    updateMemberUI();
+  </script>
+</body>
+</html>
