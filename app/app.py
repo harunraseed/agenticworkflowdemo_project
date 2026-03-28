@@ -67,6 +67,12 @@ projects = [
 
 next_id = 5
 
+# ──────────────────────────────────────────────
+# Team Registrations data store
+# ──────────────────────────────────────────────
+teams = []
+next_team_id = 1
+
 
 # ──────────────────────────────────────────────
 # Web Pages
@@ -86,6 +92,12 @@ def contact():
     entirely client-side via JavaScript.
     """
     return render_template("contact.html")
+
+
+@app.route("/register", methods=["GET"])
+def register():
+    """Serve the Team Registration page."""
+    return render_template("register.html")
 
 
 # ──────────────────────────────────────────────
@@ -194,6 +206,57 @@ def get_stats():
         ),
     }
     return jsonify(stats)
+
+
+@app.route("/api/teams", methods=["GET"])
+def get_teams():
+    """Return all registered teams."""
+    return jsonify(teams)
+
+
+@app.route("/api/teams", methods=["POST"])
+def register_team():
+    """Register a new student team.
+
+    Required fields: team_name, college_name, members (list, 1–5 names).
+    Optional fields: contact_email, project_area.
+    """
+    global next_team_id
+    data = request.get_json()
+
+    if not data:
+        return jsonify({"error": "Request body is required"}), 400
+
+    team_name = (data.get("team_name") or "").strip()
+    college_name = (data.get("college_name") or "").strip()
+    members = data.get("members", [])
+
+    if not team_name:
+        return jsonify({"error": "team_name is required"}), 400
+    if not college_name:
+        return jsonify({"error": "college_name is required"}), 400
+    if not isinstance(members, list) or len(members) == 0:
+        return jsonify({"error": "At least one member is required"}), 400
+    if len(members) > 5:
+        return jsonify({"error": "A team can have at most 5 members"}), 400
+
+    # Sanitise member names — keep only non-empty strings
+    clean_members = [str(m).strip() for m in members if str(m).strip()]
+    if len(clean_members) == 0:
+        return jsonify({"error": "At least one valid member name is required"}), 400
+
+    team = {
+        "id": next_team_id,
+        "team_name": team_name,
+        "college_name": college_name,
+        "members": clean_members,
+        "contact_email": (data.get("contact_email") or "").strip(),
+        "project_area": (data.get("project_area") or "").strip(),
+        "registered_at": datetime.now().strftime("%Y-%m-%d"),
+    }
+    next_team_id += 1
+    teams.append(team)
+    return jsonify(team), 201
 
 
 # ──────────────────────────────────────────────
