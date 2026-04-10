@@ -1,6 +1,6 @@
 # GitHub Agentic Workflows — Demo Project
 
-## Student Project Tracker with AI-Powered CI/CD
+## Project Tracker with AI-Powered CI/CD
 
 This demo project showcases **GitHub Agentic Workflows** — AI agents that live inside your CI/CD pipeline and continuously observe, reason, and act on your repository.
 

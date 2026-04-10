@@ -33,7 +33,7 @@ pip install -r requirements.txt
 python app.py
 ```
 
-Open your browser to **http://localhost:5000** — you should see the Student Project Tracker dashboard.
+Open your browser to **http://localhost:5000** — you should see the Project Tracker dashboard.
 
 ## Step 2: Run the Tests
 
@@ -44,7 +44,7 @@ python test_app.py
 
 You should see all tests pass:
 ```
-🧪 Running Student Project Tracker Tests
+🧪 Running Project Tracker Tests
 
   ✅ GET /api/projects — returned 4 projects
   ✅ GET /api/projects/1 — got AI Chatbot

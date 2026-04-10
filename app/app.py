@@ -1,5 +1,5 @@
 """
-Student Project Tracker - A simple Flask app to demonstrate GitHub Agentic Workflows.
+Project Tracker - A simple Flask app to demonstrate GitHub Agentic Workflows.
 
 This app lets students track their team projects. It's intentionally simple so the
 focus stays on the agentic workflows (CI/CD automation with AI) rather than the app itself.
@@ -263,5 +263,5 @@ def register_team():
 # Run the app
 # ──────────────────────────────────────────────
 if __name__ == "__main__":
-    print("🚀 Student Project Tracker running at http://localhost:5000")
+    print("🚀 Project Tracker running at http://localhost:5000")
     app.run(debug=True, port=5000)

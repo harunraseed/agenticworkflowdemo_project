@@ -1,5 +1,5 @@
 """
-Simple tests for the Student Project Tracker API.
+Simple tests for the Project Tracker API.
 Run with: python test_app.py
 """
 
@@ -94,7 +94,7 @@ def test_homepage():
     response = client.get("/")
 
     assert response.status_code == 200
-    assert b"Student Project Tracker" in response.data
+    assert b"Project Tracker" in response.data
     print("  ✅ GET / — homepage loaded successfully")
 
 
@@ -419,7 +419,7 @@ def test_register_team_no_body():
 
 
 if __name__ == "__main__":
-    print("\n🧪 Running Student Project Tracker Tests\n")
+    print("\n🧪 Running Project Tracker Tests\n")
     test_get_projects()
     test_get_single_project()
     test_project_not_found()
